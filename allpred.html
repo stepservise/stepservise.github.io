@@ -23,14 +23,28 @@
 <link rel="icon" href="https://getbootstrap.com/docs/5.2/assets/img/favicons/favicon.ico">
 <meta name="theme-color" content="#712cf9">
 <script>
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById('placeholder').innerHTML = xhr.responseText;
-        }
+    const http = require("http");
+const fs = require("fs");
+ 
+http.createServer(async (request, response) => {
+      
+    if(request.url == "/user"){
+         
+          const buffers = [];   // буфер для получаемых данных
+ 
+         // получаем данные из запроса в буфер
+          for await (const chunk of request) {
+            buffers.push(chunk);
+          }
+        // получаем строковое представление ответа
+        let userName = Buffer.concat(buffers).toString();
+        userName = userName + " Smith";
+        response.end(userName);
     }
-    xhr.open('GET', 'main.txt');
-    xhr.send();
+    else{
+        fs.readFile("main.txt", (error, data) => response.end(data));
+    }
+}).listen(3000, ()=>console.log("Сервер запущен по адресу http://localhost:3000"));
 //loadFile('main.txt')
 </script>
 
